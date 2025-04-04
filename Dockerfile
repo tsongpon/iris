@@ -25,9 +25,5 @@ WORKDIR /app
 # Copy the compiled binary from the builder stage
 COPY --from=builder /app/main .
 
-COPY  songpon-9485f635a693.json .
-
-RUN chmod 755 songpon-9485f635a693.json
-
 # Command to run the application
 ENTRYPOINT ["./main"]
