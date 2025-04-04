@@ -16,12 +16,14 @@ func SendLineNoti(message string) error {
 
 	lineBot, err := linebot.New(channelSecret, channelToken)
 	if err != nil {
+		log.Fatalf("Failed to create LINE bot: %v", err)
 		return err
 	}
 
 	log.Printf("Sending message to LINE group")
 	_, err = lineBot.PushMessage(lineGroupID, linebot.NewTextMessage(message)).Do()
 	if err != nil {
+		log.Printf("Failed to send message: %v", err)
 		return err
 	}
 

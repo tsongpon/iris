@@ -10,6 +10,7 @@ import (
 )
 
 func HandleRequest(ctx context.Context) error {
+	log.Printf("Running Lambda hendler function")
 	handler.LeaveEventHandler()
 	return nil
 }

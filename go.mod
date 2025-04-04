@@ -5,7 +5,6 @@ go 1.23.0
 toolchain go1.23.8
 
 require (
-	github.com/labstack/gommon v0.4.2
 	github.com/line/line-bot-sdk-go v7.8.0+incompatible
 	golang.org/x/oauth2 v0.28.0
 	google.golang.org/api v0.228.0
@@ -23,10 +22,6 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.1 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.59.0 // indirect
 	go.opentelemetry.io/otel v1.34.0 // indirect
