@@ -13,8 +13,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func GetTodayLeavesEvent() ([]string, error) {
-	calendatID := os.Getenv("CALENDAR_ID")
+func GetTodayEventFrom(calendarID string) ([]string, error) {
 	ctx := context.Background()
 
 	// Create client
@@ -44,8 +43,8 @@ func GetTodayLeavesEvent() ([]string, error) {
 	now := time.Now()
 	startOfToday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Format(time.RFC3339)
 	endOfToday := now.Add(24 * time.Hour).Format(time.RFC3339)
-	log.Printf("Get leave event of : %s", now.Format(time.DateOnly))
-	todayLeavesEvent, err := srv.Events.List(calendatID).ShowDeleted(false).
+	log.Printf("Get event of : %s, from calendar : %s", now.Format(time.DateOnly), calendarID)
+	todayLeavesEvent, err := srv.Events.List(calendarID).ShowDeleted(false).
 		SingleEvents(true).TimeMin(startOfToday).TimeMax(endOfToday).MaxResults(10).OrderBy("startTime").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)

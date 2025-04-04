@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/joho/godotenv"
 	"gitlab.com/tsongpon/iris/internal/handler"
 )
 
@@ -21,6 +22,10 @@ func main() {
 		log.Printf("Running in AWS Lambda")
 		lambda.Start(HandleRequest)
 	} else {
+		err := godotenv.Load()
+		if err != nil {
+			log.Printf("Unable to load .env file")
+		}
 		handler.LeaveEventHandler()
 	}
 }
