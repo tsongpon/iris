@@ -15,6 +15,7 @@ export LEAVE_CALENDAR_ID=your-calendar-id
 export LINE_CHANNEL_SECRET=your-line-channel-secret
 export LINE_CHANNEL_TOKEN=your-line-channel-token
 export LINE_GROUP_ID=your-line-group-id-to-send-message-to
+export HOLIDAY_CALENDAR_ID=en.th#holiday@group.v.calendar.google.com
 ```
 
 Run program
