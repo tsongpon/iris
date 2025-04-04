@@ -17,8 +17,15 @@ func LeaveEventHandler() {
 	if err != nil {
 		return
 	}
+
+	location, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		log.Fatalf("failed to load Bangkok timezone: %v", err)
+	}
+	nowWithTimeZone := time.Now().In(location)
+
 	if len(holodayEvent) > 0 {
-		message = fmt.Sprintf("วันนี้วันหยุด : (%s)\n", time.Now().Format(time.DateOnly))
+		message = fmt.Sprintf("วันนี้วันหยุด : (%s)\n", nowWithTimeZone.Format(time.DateOnly))
 		log.Printf("Today is a holiday.")
 		for i, event := range holodayEvent {
 			if i == len(holodayEvent)-1 {
@@ -34,7 +41,7 @@ func LeaveEventHandler() {
 			return
 		}
 
-		message = fmt.Sprintf("วันนี้ใครลา : (%s)\n", time.Now().Format(time.DateOnly))
+		message = fmt.Sprintf("วันนี้ใครลา : (%s)\n", nowWithTimeZone.Format(time.DateOnly))
 		if len(leaveEvents) == 0 {
 			message += "วันนี้ไม่มีคนลา :)"
 			log.Printf("No one is on leave today.")
