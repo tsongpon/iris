@@ -40,7 +40,11 @@ func GetTodayEventFrom(calendarID string) ([]string, error) {
 		log.Fatalf("Unable to retrieve Calendar client: %v", err)
 	}
 
-	now := time.Now()
+	location, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load Bangkok timezone: %v", err)
+	}
+	now := time.Now().In(location)
 	startOfToday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Format(time.RFC3339)
 	endOfToday := now.Add(24 * time.Hour).Format(time.RFC3339)
 	log.Printf("Get event of : %s, from calendar : %s", now.Format(time.DateOnly), calendarID)
