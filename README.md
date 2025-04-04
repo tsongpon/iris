@@ -1,6 +1,8 @@
 Iris
 ===========
 
+![Deploy Lambda](https://github.com/tsongpon/iris/actions/workflows/deploy.yml/badge.svg)
+
 Read event from Google Calendar and notify events to Line group
 
 ### Run
