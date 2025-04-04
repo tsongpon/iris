@@ -1,4 +1,4 @@
-name: Deploy Lambda Container
+name: Deploy Lambda
 
 on:
   push:
