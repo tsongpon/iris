@@ -29,21 +29,21 @@ func (m *MockNotificationChannel) Send(message string) error {
 }
 
 func TestEventHandler(t *testing.T) {
-	mockNotificationChennel := &MockNotificationChannel{}
-	handler := NewEventHandler(&MockLeaveEventSource{}, &MockHolidayEventSource{}, mockNotificationChennel)
+	mockNotificationChannel := &MockNotificationChannel{}
+	handler := NewEventHandler(&MockLeaveEventSource{}, &MockHolidayEventSource{}, mockNotificationChannel)
 	err := handler.HandleEvent()
 	if err != nil {
 		t.Errorf("Expected no error, but got %v", err)
 	}
 
-	if mockNotificationChennel.numberOfCalls != 1 {
-		t.Errorf("Expected notification channel to be called once, but got %d", mockNotificationChennel.numberOfCalls)
+	if mockNotificationChannel.numberOfCalls != 1 {
+		t.Errorf("Expected notification channel to be called once, but got %d", mockNotificationChannel.numberOfCalls)
 	}
 
-	if mockNotificationChennel.sentMessage == "" {
+	if mockNotificationChannel.sentMessage == "" {
 		t.Errorf("Expected a message to be sent, but got an empty message")
 	}
-	if mockNotificationChennel.sentMessage != "วันนี้ใครลา : ("+time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly)+")\n- Mock Event 1\n- Mock Event 2" {
+	if mockNotificationChannel.sentMessage != "วันนี้ใครลา : ("+time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly)+")\n- Mock Event 1\n- Mock Event 2" {
 		t.Errorf("Expected message to be 'วันนี้ใครลา : (%s)\n- Mock Event 1\n- Mock Event 2', but got %s", time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly), mockNotificationChennel.sentMessage)
 	}
 }

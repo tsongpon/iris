@@ -19,7 +19,7 @@ func NewLineNoti(lineGroupID string, channelSecret string, channelToken string) 
 func (l *LineNoti) Send(message string) error {
 	lineBot, err := linebot.New(l.channelSecret, l.channelToken)
 	if err != nil {
-		log.Fatalf("Failed to create LINE bot: %v", err)
+		log.Printf("Failed to create LINE bot: %v", err)
 		return err
 	}
 
