@@ -7,9 +7,9 @@ import (
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/joho/godotenv"
-	eventsource "gitlab.com/tsongpon/iris/internal/event-source"
+	"gitlab.com/tsongpon/iris/internal/eventsource"
 	"gitlab.com/tsongpon/iris/internal/handler"
-	notichannel "gitlab.com/tsongpon/iris/internal/noti-channel"
+	"gitlab.com/tsongpon/iris/internal/notichannel"
 )
 
 func newEventHandler() *handler.EventHandler {
