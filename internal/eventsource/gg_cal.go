@@ -43,8 +43,6 @@ func (g *GoogleCalendar) GetEvents(asOf time.Time) ([]string, error) {
 
 	startOfToday := time.Date(asOf.Year(), asOf.Month(), asOf.Day(), 0, 0, 0, 0, asOf.Location())
 	endOfToday := startOfToday.Add(24*time.Hour - time.Second)
-	// log.Printf("Start of today: %s", startOfToday.Format(time.RFC3339))
-	// log.Printf("End of today: %s", endOfToday.Format(time.RFC3339))
 	log.Printf("Get event of : %s, from calendar : %s", asOf.Format(time.DateOnly), g.calendarID)
 
 	todayLeavesEvent, err := srv.Events.List(g.calendarID).ShowDeleted(false).
@@ -55,7 +53,6 @@ func (g *GoogleCalendar) GetEvents(asOf time.Time) ([]string, error) {
 
 	var eventSummaries []string
 	for _, item := range todayLeavesEvent.Items {
-		log.Printf("Event: %s (%s)", item.Summary, item.Start.DateTime)
 		eventSummaries = append(eventSummaries, item.Summary)
 	}
 
