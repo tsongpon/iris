@@ -44,6 +44,6 @@ func TestEventHandler(t *testing.T) {
 		t.Errorf("Expected a message to be sent, but got an empty message")
 	}
 	if mockNotificationChannel.sentMessage != "วันนี้ใครลา : ("+time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly)+")\n- Mock Event 1\n- Mock Event 2" {
-		t.Errorf("Expected message to be 'วันนี้ใครลา : (%s)\n- Mock Event 1\n- Mock Event 2', but got %s", time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly), mockNotificationChennel.sentMessage)
+		t.Errorf("Expected message to be 'วันนี้ใครลา : (%s)\n- Mock Event 1\n- Mock Event 2', but got %s", time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly), mockNotificationChannel.sentMessage)
 	}
 }
