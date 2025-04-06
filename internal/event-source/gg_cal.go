@@ -45,11 +45,11 @@ func GetTodayEventFrom(calendarID string) ([]string, error) {
 		return nil, fmt.Errorf("failed to load Bangkok timezone: %v", err)
 	}
 	now := time.Now().In(location)
-	startOfToday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Format(time.RFC3339)
-	endOfToday := now.Add(24 * time.Hour).Format(time.RFC3339)
+	startOfToday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	endOfToday := startOfToday.Add(24*time.Hour - time.Second)
 	log.Printf("Get event of : %s, from calendar : %s", now.Format(time.DateOnly), calendarID)
 	todayLeavesEvent, err := srv.Events.List(calendarID).ShowDeleted(false).
-		SingleEvents(true).TimeMin(startOfToday).TimeMax(endOfToday).MaxResults(10).OrderBy("startTime").Do()
+		SingleEvents(true).TimeMin(startOfToday.Format(time.RFC3339)).TimeMax(endOfToday.Format(time.RFC3339)).MaxResults(10).OrderBy("startTime").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
 	}
