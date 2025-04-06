@@ -1,5 +1,5 @@
 # Use a specific version of Golang for better reproducibility
-FROM golang:1.24.2-alpine3.19 as builder
+FROM golang:1.24.2 as builder
 
 
 # Set the working directory inside the container
@@ -22,21 +22,11 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 # Use a minimal base image for the final container
 FROM public.ecr.aws/lambda/provided:al2023
 
-# Add non-root user for security
-RUN adduser -D -g '' appuser
-
 # Set the working directory inside the container
 WORKDIR /app
 
 # Copy the compiled binary from the builder stage
-COPY --from=builder --chown=appuser:appuser /app/main .
-
-# Switch to non-root user
-USER appuser
-
-# Add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
+COPY --from=builder /app/main .
 
 # Add metadata
 LABEL org.opencontainers.image.version=${VERSION} \
