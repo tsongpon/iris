@@ -103,10 +103,6 @@ func TestEventHandlerWithNoLeaveAndNoHoliday(t *testing.T) {
 		t.Errorf("Expected a message to be sent, but got an empty message")
 	}
 
-	if mockNotificationChannel.sentMessage == "" {
-		t.Errorf("Expected a message to be sent, but got an empty message")
-	}
-
 	if mockNotificationChannel.sentMessage != "วันนี้ใครลา : ("+now.Format(time.DateOnly)+")\nวันนี้ไม่มีคนลา :)" {
 		t.Errorf("Expected message to be 'วันนี้ใครลา : (%s)\nวันนี้ไม่มีคนลา :)', but got %s", now.Format(time.DateOnly), mockNotificationChannel.sentMessage)
 	}
