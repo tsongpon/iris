@@ -47,8 +47,9 @@ func TestEventHandlerWith2LeaveNoHoliday(t *testing.T) {
 		t.Errorf("Expected a message to be sent, but got an empty message")
 	}
 
-	if mockNotificationChannel.sentMessage != "วันนี้ใครลา : ("+time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly)+")\n- Tum leave\n- Songpon leave" {
-		t.Errorf("Expected message to be 'วันนี้ใครลา : (%s)\n- Tum leave\n- Songpon leave', but got %s", time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly), mockNotificationChannel.sentMessage)
+	now := time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600))
+	if mockNotificationChannel.sentMessage != "วันนี้ใครลา : ("+now.Format(time.DateOnly)+")\n- Tum leave\n- Songpon leave" {
+		t.Errorf("Expected message to be 'วันนี้ใครลา : (%s)\n- Tum leave\n- Songpon leave', but got %s", now.Format(time.DateOnly), mockNotificationChannel.sentMessage)
 	}
 }
 
@@ -70,8 +71,9 @@ func TestEventHandlerWith1LeaveAnd1Holiday(t *testing.T) {
 		t.Errorf("Expected a message to be sent, but got an empty message")
 	}
 
-	if mockNotificationChannel.sentMessage != "วันนี้วันหยุด : ("+time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly)+")\n- Father's Day" {
-		t.Errorf("Expected message to be 'วันนี้วันหยุด : (%s)\n- Father's Day', but got %s", time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly), mockNotificationChannel.sentMessage)
+	now := time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600))
+	if mockNotificationChannel.sentMessage != "วันนี้วันหยุด : ("+now.Format(time.DateOnly)+")\n- Father's Day" {
+		t.Errorf("Expected message to be 'วันนี้วันหยุด : (%s)\n- Father's Day', but got %s", now.Format(time.DateOnly), mockNotificationChannel.sentMessage)
 	}
 }
 
@@ -97,8 +99,9 @@ func TestEventHandlerWithNoLeaveAndNoHoliday(t *testing.T) {
 		t.Errorf("Expected a message to be sent, but got an empty message")
 	}
 
-	if mockNotificationChannel.sentMessage != "วันนี้ใครลา : ("+time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly)+")\nวันนี้ไม่มีคนลา :)" {
-		t.Errorf("Expected message to be 'วันนี้ใครลา : (%s)\nวันนี้ไม่มีคนลา :)', but got %s", time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600)).Format(time.DateOnly), mockNotificationChannel.sentMessage)
+	now := time.Now().In(time.FixedZone("Asia/Bangkok", 7*3600))
+	if mockNotificationChannel.sentMessage != "วันนี้ใครลา : ("+now.Format(time.DateOnly)+")\nวันนี้ไม่มีคนลา :)" {
+		t.Errorf("Expected message to be 'วันนี้ใครลา : (%s)\nวันนี้ไม่มีคนลา :)', but got %s", now.Format(time.DateOnly), mockNotificationChannel.sentMessage)
 	}
 }
 
@@ -120,7 +123,7 @@ func TestEventHandlerWithHolidayEventSourceError(t *testing.T) {
 func TestEventHandlerWithLeaveEventSourceError(t *testing.T) {
 	mockNotificationChannel := &MockNotificationChannel{}
 	mockHolidayEventSource := &MockEventSource{event: []string{}}
-	mockLeaveEventSource := &MockEventSource{event: []string{}, err: fmt.Errorf("leave event source error")}
+	mockLeaveEventSource := &MockEventSource{event: []string{}, err: fmt.Errorf("holiday event source error")}
 	handler := NewEventHandler(mockLeaveEventSource, mockHolidayEventSource, mockNotificationChannel)
 	err := handler.HandleEvent()
 	if err == nil {
