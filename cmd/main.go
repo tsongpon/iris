@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/joho/godotenv"
@@ -17,7 +18,13 @@ func newEventHandler() *handler.EventHandler {
 	leaveEventSource := eventsource.NewGoogleCalendar(os.Getenv("LEAVE_CALENDAR_ID"), os.Getenv("GOOGLE_CREDENTIALS_JSON"))
 	notiChannel := notichannel.NewLineNoti(os.Getenv("LINE_GROUP_ID"), os.Getenv("LINE_CHANNEL_SECRET"), os.Getenv("LINE_CHANNEL_TOKEN"))
 
-	eventHandler := handler.NewEventHandler(leaveEventSource, holidayEventSource, notiChannel)
+	bangkok, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		return nil
+	}
+	now := time.Now().In(bangkok)
+
+	eventHandler := handler.NewEventHandler(leaveEventSource, holidayEventSource, notiChannel, now)
 	return eventHandler
 }
 

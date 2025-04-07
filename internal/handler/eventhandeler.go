@@ -10,36 +10,32 @@ type EventHandler struct {
 	leaveEventsource   EventSource
 	holidayEventSource EventSource
 	notiChannel        NotificationChannel
+	asOf               time.Time
 }
 
-func NewEventHandler(leaveEventSource EventSource, holidayEventSource EventSource, notiChannel NotificationChannel) *EventHandler {
+func NewEventHandler(leaveEventSource EventSource, holidayEventSource EventSource, notiChannel NotificationChannel, asOf time.Time) *EventHandler {
 	return &EventHandler{
 		leaveEventsource:   leaveEventSource,
 		holidayEventSource: holidayEventSource,
 		notiChannel:        notiChannel,
+		asOf:               asOf,
 	}
 }
 
 func (e *EventHandler) HandleEvent() error {
-	bangkok, err := time.LoadLocation("Asia/Bangkok")
-	if err != nil {
-		return nil
-	}
-	now := time.Now().In(bangkok)
-
-	holidayEvents, err := e.holidayEventSource.GetEvents(now)
+	holidayEvents, err := e.holidayEventSource.GetEvents(e.asOf)
 	if err != nil {
 		log.Printf("Failed to get holiday events: %v", err)
 		return err
 	}
-	leaveEvents, err := e.leaveEventsource.GetEvents(now)
+	leaveEvents, err := e.leaveEventsource.GetEvents(e.asOf)
 	if err != nil {
 		log.Printf("Failed to get leave events: %v", err)
 		return err
 	}
 
 	if len(holidayEvents) > 0 {
-		message := fmt.Sprintf("วันนี้วันหยุด : (%s)\n", now.Format(time.DateOnly))
+		message := fmt.Sprintf("วันนี้วันหยุด : (%s)\n", e.asOf.Format(time.DateOnly))
 		log.Printf("Today is a holiday.")
 		for i, event := range holidayEvents {
 			if i == len(holidayEvents)-1 {
@@ -54,7 +50,7 @@ func (e *EventHandler) HandleEvent() error {
 			return err
 		}
 	} else {
-		message := fmt.Sprintf("วันนี้ใครลา : (%s)\n", now.Format(time.DateOnly))
+		message := fmt.Sprintf("วันนี้ใครลา : (%s)\n", e.asOf.Format(time.DateOnly))
 		if len(leaveEvents) == 0 {
 			message += "วันนี้ไม่มีคนลา :)"
 			log.Printf("No one is on leave today.")
