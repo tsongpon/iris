@@ -13,25 +13,31 @@ import (
 	"gitlab.com/tsongpon/iris/internal/notichannel"
 )
 
-func newEventHandler() *handler.EventHandler {
+func newEventHandler() (*handler.EventHandler, error) {
 	holidayEventSource := eventsource.NewGoogleCalendar(os.Getenv("HOLIDAY_CALENDAR_ID"), os.Getenv("GOOGLE_CREDENTIALS_JSON"))
 	leaveEventSource := eventsource.NewGoogleCalendar(os.Getenv("LEAVE_CALENDAR_ID"), os.Getenv("GOOGLE_CREDENTIALS_JSON"))
 	notiChannel := notichannel.NewLineNoti(os.Getenv("LINE_GROUP_ID"), os.Getenv("LINE_CHANNEL_SECRET"), os.Getenv("LINE_CHANNEL_TOKEN"))
 
 	bangkok, err := time.LoadLocation("Asia/Bangkok")
 	if err != nil {
-		return nil
+		log.Printf("Error loading location: %v", err)
+		return nil, err
 	}
 	now := time.Now().In(bangkok)
 
 	eventHandler := handler.NewEventHandler(leaveEventSource, holidayEventSource, notiChannel, now)
-	return eventHandler
+	return eventHandler, nil
 }
 
 func HandleRequest(ctx context.Context) error {
 	log.Printf("Running Lambda hendler function")
-	handler := newEventHandler()
-	err := handler.HandleEvent()
+	var err error
+	handler, err := newEventHandler()
+	if err != nil {
+		log.Printf("Error creating event handler: %v", err)
+		return err
+	}
+	err = handler.HandleEvent()
 	if err != nil {
 		log.Printf("Error handling event: %v", err)
 		return err
@@ -49,7 +55,10 @@ func main() {
 		if err := godotenv.Load(); err != nil {
 			log.Printf("Unable to load .env file")
 		}
-		handler := newEventHandler()
+		handler, err := newEventHandler()
+		if err != nil {
+			log.Fatalf("Error creating event handler: %v", err)
+		}
 		if err := handler.HandleEvent(); err != nil {
 			log.Fatalf("Error handling event: %v", err)
 		}
