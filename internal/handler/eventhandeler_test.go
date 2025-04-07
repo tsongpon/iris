@@ -123,7 +123,7 @@ func TestEventHandlerWithHolidayEventSourceError(t *testing.T) {
 func TestEventHandlerWithLeaveEventSourceError(t *testing.T) {
 	mockNotificationChannel := &MockNotificationChannel{}
 	mockHolidayEventSource := &MockEventSource{event: []string{}}
-	mockLeaveEventSource := &MockEventSource{event: []string{}, err: fmt.Errorf("holiday event source error")}
+	mockLeaveEventSource := &MockEventSource{event: []string{}, err: fmt.Errorf("leave event source error")}
 	handler := NewEventHandler(mockLeaveEventSource, mockHolidayEventSource, mockNotificationChannel)
 	err := handler.HandleEvent()
 	if err == nil {
