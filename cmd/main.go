@@ -23,9 +23,10 @@ func newEventHandler() (*handler.EventHandler, error) {
 		log.Printf("Error loading location: %v", err)
 		return nil, err
 	}
-	now := time.Now().In(bangkok)
 
-	eventHandler := handler.NewEventHandler(leaveEventSource, holidayEventSource, notiChannel, now)
+	nowInBangkok := time.Now().In(bangkok)
+
+	eventHandler := handler.NewEventHandler(leaveEventSource, holidayEventSource, notiChannel, nowInBangkok)
 	return eventHandler, nil
 }
 
