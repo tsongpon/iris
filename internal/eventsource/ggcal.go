@@ -43,6 +43,8 @@ func (g *GoogleCalendar) GetEvents(asOf time.Time) ([]string, error) {
 
 	startOfToday := asOf.Truncate(24 * time.Hour).Format(time.RFC3339)
 	endOfToday := asOf.Truncate(24 * time.Hour).Add(24 * time.Hour).Format(time.RFC3339)
+	log.Printf("Start of today: %s", startOfToday)
+	log.Printf("End of today: %s", endOfToday)
 	log.Printf("Get event of : %s, from calendar : %s", asOf.Format(time.DateOnly), g.calendarID)
 
 	todayLeavesEvent, err := srv.Events.List(g.calendarID).ShowDeleted(false).
