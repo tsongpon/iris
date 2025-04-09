@@ -41,8 +41,8 @@ func (g *GoogleCalendar) GetEvents(asOf time.Time) ([]string, error) {
 		log.Fatalf("Unable to retrieve Calendar client: %v", err)
 	}
 
-	startOfToday := asOf.Truncate(24 * time.Hour).Format(time.RFC3339)
-	endOfToday := asOf.Truncate(24 * time.Hour).Add(24 * time.Hour).Format(time.RFC3339)
+	startOfToday := time.Date(asOf.Year(), asOf.Month(), asOf.Day(), 0, 0, 0, 0, asOf.Location()).Format(time.RFC3339)
+	endOfToday := time.Date(asOf.Year(), asOf.Month(), asOf.Day(), 23, 59, 59, int(time.Second-time.Nanosecond), asOf.Location()).Format(time.RFC3339)
 	log.Printf("Get event of : %s, from calendar : %s", asOf.Format(time.DateOnly), g.calendarID)
 
 	todayLeavesEvent, err := srv.Events.List(g.calendarID).ShowDeleted(false).
@@ -53,7 +53,6 @@ func (g *GoogleCalendar) GetEvents(asOf time.Time) ([]string, error) {
 
 	var eventSummaries []string
 	for _, item := range todayLeavesEvent.Items {
-		log.Printf(item.End.Date)
 		eventSummaries = append(eventSummaries, item.Summary)
 	}
 
