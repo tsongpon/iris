@@ -14,7 +14,6 @@ import (
 )
 
 func newEventHandler() (*handler.EventHandler, error) {
-	holidayEventSource := eventsource.NewGoogleCalendar(os.Getenv("HOLIDAY_CALENDAR_ID"), os.Getenv("GOOGLE_CREDENTIALS_JSON"))
 	leaveEventSource := eventsource.NewGoogleCalendar(os.Getenv("LEAVE_CALENDAR_ID"), os.Getenv("GOOGLE_CREDENTIALS_JSON"))
 	notiChannel := notichannel.NewLineNoti(os.Getenv("LINE_GROUP_ID"), os.Getenv("LINE_CHANNEL_SECRET"), os.Getenv("LINE_CHANNEL_TOKEN"))
 
@@ -26,7 +25,7 @@ func newEventHandler() (*handler.EventHandler, error) {
 
 	nowInBangkok := time.Now().In(bangkok)
 
-	eventHandler := handler.NewEventHandler(leaveEventSource, holidayEventSource, notiChannel, nowInBangkok)
+	eventHandler := handler.NewEventHandler(leaveEventSource, notiChannel, nowInBangkok)
 	return eventHandler, nil
 }
 
