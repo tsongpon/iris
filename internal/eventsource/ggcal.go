@@ -46,7 +46,7 @@ func (g *GoogleCalendar) GetEvents(asOf time.Time) ([]string, error) {
 	log.Printf("Get event of : %s, from calendar : %s", asOf.Format(time.DateOnly), g.calendarID)
 
 	todayLeavesEvent, err := srv.Events.List(g.calendarID).ShowDeleted(false).
-		SingleEvents(true).TimeMin(startOfToday).TimeMax(endOfToday).MaxResults(10).OrderBy("startTime").Do()
+		SingleEvents(true).TimeMin(startOfToday).TimeMax(endOfToday).MaxResults(50).OrderBy("startTime").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
 	}
