@@ -27,11 +27,8 @@ func (e *EventHandler) HandleEvent() error {
 		return err
 	}
 
-	message := fmt.Sprintf("วันนี้ใครลา : (%s)\n", e.asOf.Format(time.DateOnly))
-	if len(leaveEvents) == 0 {
-		message += "วันนี้ไม่มีคนลา :)"
-		log.Printf("No one is on leave today.")
-	} else {
+	if len(leaveEvents) > 0 {
+		message := fmt.Sprintf("วันนี้ใครลา : (%s)\n", e.asOf.Format(time.DateOnly))
 		log.Printf("There are " + fmt.Sprint(len(leaveEvents)) + " on leave today.")
 		for i, event := range leaveEvents {
 			if i == len(leaveEvents)-1 {
@@ -40,8 +37,8 @@ func (e *EventHandler) HandleEvent() error {
 				message += fmt.Sprintf("%v\n", "- "+event)
 			}
 		}
+		err = e.notiChannel.Send(message)
 	}
-	err = e.notiChannel.Send(message)
 	if err != nil {
 		log.Printf("Failed to send notification: %v", err)
 		return err
