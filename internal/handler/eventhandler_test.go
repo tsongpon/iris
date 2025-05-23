@@ -67,8 +67,12 @@ func TestEventHandlerWithNoLeave(t *testing.T) {
 		t.Errorf("Expected no error, but got %v", err)
 	}
 
-	if mockNotificationChannel.numberOfCalls != 0 {
-		t.Errorf("Expected notification channel not to be called, but got %d", mockNotificationChannel.numberOfCalls)
+	if mockNotificationChannel.numberOfCalls != 1 {
+		t.Errorf("Expected notification channel to be called once, but got %d", mockNotificationChannel.numberOfCalls)
+	}
+
+	if mockNotificationChannel.sentMessage != "no one leave" {
+		t.Errorf("Expected message to be 'no one leave', but got %s", mockNotificationChannel.sentMessage)
 	}
 }
 

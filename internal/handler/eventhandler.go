@@ -38,10 +38,17 @@ func (e *EventHandler) HandleEvent() error {
 			}
 		}
 		err = e.notiChannel.Send(message)
-	}
-	if err != nil {
-		log.Printf("Failed to send notification: %v", err)
-		return err
+		if err != nil {
+			log.Printf("Failed to send notification: %v", err)
+			return err
+		}
+	} else {
+		message := "no one leave"
+		err = e.notiChannel.Send(message)
+		if err != nil {
+			log.Printf("Failed to send notification: %v", err)
+			return err
+		}
 	}
 
 	return nil
