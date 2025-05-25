@@ -17,7 +17,7 @@ COPY . .
 # Build the Go application with optimizations and security flags
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildDate=${BUILD_DATE} -X main.Commit=${COMMIT_SHA}" \
-    -o main ./cmd/main.go
+    -o main ./cmd/api-server/main.go
 
 # Use a minimal base image for the final container
 FROM public.ecr.aws/lambda/provided:al2023
