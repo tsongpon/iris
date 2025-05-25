@@ -1,4 +1,4 @@
-package handler
+package service
 
 import (
 	"fmt"
@@ -6,21 +6,21 @@ import (
 	"time"
 )
 
-type EventHandler struct {
-	leaveEventsource EventSource
-	notiChannel      NotificationChannel
+type LeaveNotifyService struct {
+	leaveEventsource EventRepository
+	notiGateway      NotificationGateway
 	asOf             time.Time
 }
 
-func NewEventHandler(leaveEventSource EventSource, notiChannel NotificationChannel, asOf time.Time) *EventHandler {
-	return &EventHandler{
+func NewLeaveNotifyServicer(leaveEventSource EventRepository, notiGateway NotificationGateway, asOf time.Time) *LeaveNotifyService {
+	return &LeaveNotifyService{
 		leaveEventsource: leaveEventSource,
-		notiChannel:      notiChannel,
+		notiGateway:      notiGateway,
 		asOf:             asOf,
 	}
 }
 
-func (e *EventHandler) HandleEvent() error {
+func (e *LeaveNotifyService) HandleEvent() error {
 	leaveEvents, err := e.leaveEventsource.GetEvents(e.asOf)
 	if err != nil {
 		log.Printf("Failed to get leave events: %v", err)
@@ -37,11 +37,11 @@ func (e *EventHandler) HandleEvent() error {
 				message += fmt.Sprintf("%v\n", "- "+event)
 			}
 		}
-		err = e.notiChannel.Send(message)
-	}
-	if err != nil {
-		log.Printf("Failed to send notification: %v", err)
-		return err
+		err = e.notiGateway.Send(message)
+		if err != nil {
+			log.Printf("Failed to send notification: %v", err)
+			return err
+		}
 	}
 
 	return nil

@@ -1,4 +1,4 @@
-package notichannel
+package gateway
 
 import (
 	"log"
@@ -6,17 +6,17 @@ import (
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
-type LineNoti struct {
+type LineNotificationGateway struct {
 	lineGroupID   string
 	channelSecret string
 	channelToken  string
 }
 
-func NewLineNoti(lineGroupID string, channelSecret string, channelToken string) *LineNoti {
-	return &LineNoti{lineGroupID: lineGroupID, channelSecret: channelSecret, channelToken: channelToken}
+func NewLineNotificationGateway(lineGroupID string, channelSecret string, channelToken string) *LineNotificationGateway {
+	return &LineNotificationGateway{lineGroupID: lineGroupID, channelSecret: channelSecret, channelToken: channelToken}
 }
 
-func (l *LineNoti) Send(message string) error {
+func (l *LineNotificationGateway) Send(message string) error {
 	lineBot, err := linebot.New(l.channelSecret, l.channelToken)
 	if err != nil {
 		log.Printf("Failed to create LINE bot: %v", err)
