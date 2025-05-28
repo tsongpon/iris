@@ -21,5 +21,5 @@ export HOLIDAY_CALENDAR_ID=en.th#holiday@group.v.calendar.google.com
 Run program
 
 ```bash
-go run cmd/main.go
+go run cmd/api-server/main.go
 ```
