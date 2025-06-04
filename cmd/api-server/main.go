@@ -8,14 +8,15 @@ import (
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/joho/godotenv"
-	"gitlab.com/tsongpon/iris/internal/eventsource"
-	"gitlab.com/tsongpon/iris/internal/handler"
-	"gitlab.com/tsongpon/iris/internal/notichannel"
+	"gitlab.com/tsongpon/iris/internal/gateway"
+	"gitlab.com/tsongpon/iris/internal/repository"
+	"gitlab.com/tsongpon/iris/internal/service"
 )
 
-func newEventHandler() (*handler.EventHandler, error) {
-	leaveEventSource := eventsource.NewGoogleCalendar(os.Getenv("LEAVE_CALENDAR_ID"), os.Getenv("GOOGLE_CREDENTIALS_JSON"))
-	notiChannel := notichannel.NewLineNoti(os.Getenv("LINE_GROUP_ID"), os.Getenv("LINE_CHANNEL_SECRET"), os.Getenv("LINE_CHANNEL_TOKEN"))
+func newEventHandler() (*service.LeaveNotifyService, error) {
+
+	leaveRepository := repository.NewGoogleCalendarRepository(os.Getenv("LEAVE_CALENDAR_ID"), os.Getenv("GOOGLE_CREDENTIALS_JSON"))
+	notificationGateway := gateway.NewLineNotificationGateway(os.Getenv("LINE_GROUP_ID"), os.Getenv("LINE_CHANNEL_SECRET"), os.Getenv("LINE_CHANNEL_TOKEN"))
 
 	bangkok, err := time.LoadLocation("Asia/Bangkok")
 	if err != nil {
@@ -24,9 +25,9 @@ func newEventHandler() (*handler.EventHandler, error) {
 	}
 
 	nowInBangkok := time.Now().In(bangkok)
+	leaveNotifyService := service.NewLeaveNotifyServicer(leaveRepository, notificationGateway, nowInBangkok)
 
-	eventHandler := handler.NewEventHandler(leaveEventSource, notiChannel, nowInBangkok)
-	return eventHandler, nil
+	return leaveNotifyService, nil
 }
 
 func HandleRequest(ctx context.Context) error {

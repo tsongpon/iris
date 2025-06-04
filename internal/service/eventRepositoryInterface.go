@@ -1,7 +1,7 @@
-package handler
+package service
 
 import "time"
 
-type EventSource interface {
+type EventRepository interface {
 	GetEvents(asOf time.Time) ([]string, error)
 }

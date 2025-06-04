@@ -1,4 +1,4 @@
-package eventsource
+package repository
 
 import (
 	"context"
@@ -12,16 +12,16 @@ import (
 	"google.golang.org/api/option"
 )
 
-type GoogleCalendar struct {
+type GoogleCalendarRepository struct {
 	calendarID                     string
 	base64GoogleCalendarCredential string
 }
 
-func NewGoogleCalendar(calendarID string, base64GoogleCalendarCredential string) *GoogleCalendar {
-	return &GoogleCalendar{calendarID: calendarID, base64GoogleCalendarCredential: base64GoogleCalendarCredential}
+func NewGoogleCalendarRepository(calendarID string, base64GoogleCalendarCredential string) *GoogleCalendarRepository {
+	return &GoogleCalendarRepository{calendarID: calendarID, base64GoogleCalendarCredential: base64GoogleCalendarCredential}
 }
 
-func (g *GoogleCalendar) GetEvents(asOf time.Time) ([]string, error) {
+func (g *GoogleCalendarRepository) GetEvents(asOf time.Time) ([]string, error) {
 	ctx := context.Background()
 
 	// Decode the Base64-encoded credentials

@@ -1,4 +1,4 @@
-package handler
+package service
 
 import (
 	"fmt"
@@ -6,37 +6,37 @@ import (
 	"time"
 )
 
-type MockEventSource struct {
+type MockEventRepository struct {
 	event []string
 	err   error
 }
 
-func (m *MockEventSource) GetEvents(asOf time.Time) ([]string, error) {
+func (m *MockEventRepository) GetEvents(asOf time.Time) ([]string, error) {
 	if m.err != nil {
 		return nil, m.err
 	}
 	return m.event, nil
 }
 
-type MockNotificationChannel struct {
+type MockNotificationGateway struct {
 	numberOfCalls int
 	sentMessage   string
 }
 
-func (m *MockNotificationChannel) Send(message string) error {
+func (m *MockNotificationGateway) Send(message string) error {
 	m.numberOfCalls++
 	m.sentMessage = message
 	return nil
 }
 
 func TestEventHandlerWith2Leaves(t *testing.T) {
-	mockNotificationChannel := &MockNotificationChannel{}
-	mockLeaveEventSource := &MockEventSource{event: []string{"Tum leave", "Songpon leave"}}
+	mockNotificationChannel := &MockNotificationGateway{}
+	mockLeaveEventSource := &MockEventRepository{event: []string{"Tum leave", "Songpon leave"}}
 
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
 	now := time.Now().In(bangkok)
 
-	handler := NewEventHandler(mockLeaveEventSource, mockNotificationChannel, now)
+	handler := NewLeaveNotifyServicer(mockLeaveEventSource, mockNotificationChannel, now)
 	err := handler.HandleEvent()
 	if err != nil {
 		t.Errorf("Expected no error, but got %v", err)
@@ -56,12 +56,12 @@ func TestEventHandlerWith2Leaves(t *testing.T) {
 }
 
 func TestEventHandlerWithNoLeave(t *testing.T) {
-	mockNotificationChannel := &MockNotificationChannel{}
-	mockLeaveEventSource := &MockEventSource{event: []string{}}
+	mockNotificationChannel := &MockNotificationGateway{}
+	mockLeaveEventSource := &MockEventRepository{event: []string{}}
 
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
 	now := time.Now().In(bangkok)
-	handler := NewEventHandler(mockLeaveEventSource, mockNotificationChannel, now)
+	handler := NewLeaveNotifyServicer(mockLeaveEventSource, mockNotificationChannel, now)
 	err := handler.HandleEvent()
 	if err != nil {
 		t.Errorf("Expected no error, but got %v", err)
@@ -71,18 +71,19 @@ func TestEventHandlerWithNoLeave(t *testing.T) {
 		t.Errorf("Expected notification channel to be called once, but got %d", mockNotificationChannel.numberOfCalls)
 	}
 
-	if mockNotificationChannel.sentMessage != "no one leave" {
-		t.Errorf("Expected message to be 'no one leave', but got %s", mockNotificationChannel.sentMessage)
+	expectedMessage := "No one leave today"
+	if mockNotificationChannel.sentMessage != expectedMessage {
+		t.Errorf("Expected message '%s', but got '%s'", expectedMessage, mockNotificationChannel.sentMessage)
 	}
 }
 
 func TestEventHandlerWithLeaveEventSourceError(t *testing.T) {
-	mockNotificationChannel := &MockNotificationChannel{}
-	mockLeaveEventSource := &MockEventSource{event: []string{}, err: fmt.Errorf("leave event source error")}
+	mockNotificationChannel := &MockNotificationGateway{}
+	mockLeaveEventSource := &MockEventRepository{event: []string{}, err: fmt.Errorf("leave event source error")}
 
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
 	now := time.Now().In(bangkok)
-	handler := NewEventHandler(mockLeaveEventSource, mockNotificationChannel, now)
+	handler := NewLeaveNotifyServicer(mockLeaveEventSource, mockNotificationChannel, now)
 	err := handler.HandleEvent()
 	if err == nil {
 		t.Errorf("Expected an error, but got nil")
