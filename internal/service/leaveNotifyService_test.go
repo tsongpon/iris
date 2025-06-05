@@ -29,6 +29,12 @@ func (m *MockNotificationGateway) Send(message string) error {
 	return nil
 }
 
+func (m *MockNotificationGateway) AssertSentWithMessage(t *testing.T, expectedMessage string) {
+	if m.sentMessage != expectedMessage {
+		t.Errorf("Expected message to be '%s', but got '%s'", expectedMessage, m.sentMessage)
+	}
+}
+
 func TestEventHandlerWith2Leaves(t *testing.T) {
 	mockNotificationChannel := &MockNotificationGateway{}
 	mockLeaveEventSource := &MockEventRepository{event: []string{"Tum leave", "Songpon leave"}}
@@ -67,9 +73,10 @@ func TestEventHandlerWithNoLeave(t *testing.T) {
 		t.Errorf("Expected no error, but got %v", err)
 	}
 
-	if mockNotificationChannel.numberOfCalls != 0 {
-		t.Errorf("Expected notification channel not to be called, but got %d", mockNotificationChannel.numberOfCalls)
+	if mockNotificationChannel.numberOfCalls != 1 {
+		t.Errorf("Expected notification channel to be called once, but got %d", mockNotificationChannel.numberOfCalls)
 	}
+	mockNotificationChannel.AssertSentWithMessage(t, "No one leave today")
 }
 
 func TestEventHandlerWithLeaveEventSourceError(t *testing.T) {

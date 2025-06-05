@@ -42,6 +42,14 @@ func (e *LeaveNotifyService) HandleEvent() error {
 			log.Printf("Failed to send notification: %v", err)
 			return err
 		}
+} else {
+	message := "No one leave today"
+	log.Printf(message)
+	err = e.notiGateway.Send(message)
+	if err != nil {
+		log.Printf("Failed to send notification: %v", err)
+		return err
+	}
 	}
 
 	return nil
