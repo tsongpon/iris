@@ -1,5 +1,5 @@
 # Use a specific version of Golang for better reproducibility
-FROM golang:1.24.2 as builder
+FROM golang:1.24.4 as builder
 
 
 # Set the working directory inside the container
@@ -17,7 +17,7 @@ COPY . .
 # Build the Go application with optimizations and security flags
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
     go build -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildDate=${BUILD_DATE} -X main.Commit=${COMMIT_SHA}" \
-    -o main ./cmd/api-server/main.go
+    -o main ./cmd/iris/main.go
 
 # Use a minimal base image for the final container
 FROM public.ecr.aws/lambda/provided:al2023
@@ -30,10 +30,10 @@ COPY --from=builder /app/main .
 
 # Add metadata
 LABEL org.opencontainers.image.version=${VERSION} \
-      org.opencontainers.image.created=${BUILD_DATE} \
-      org.opencontainers.image.revision=${COMMIT_SHA} \
-      org.opencontainers.image.title="Iris Application" \
-      org.opencontainers.image.description="Iris Application Container"
+    org.opencontainers.image.created=${BUILD_DATE} \
+    org.opencontainers.image.revision=${COMMIT_SHA} \
+    org.opencontainers.image.title="Iris Application" \
+    org.opencontainers.image.description="Iris Application Container"
 
 # Command to run the application
 ENTRYPOINT ["./main"]
