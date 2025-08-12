@@ -58,7 +58,7 @@ func TestEventNotifyService_Notify_HolidayEvents_SingleEvent(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้วันหยุด : (2025-08-12)\n- National Day"
+	expectedMessage := "วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- National Day"
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -88,7 +88,7 @@ func TestEventNotifyService_Notify_HolidayEvents_MultipleEvents(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้วันหยุด : (2025-08-12)\n- National Day\n- Independence Day"
+	expectedMessage := "วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- National Day\n- Independence Day"
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -178,7 +178,7 @@ func TestEventNotifyService_Notify_LeaveEvents_SingleEvent(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้ใครลา : (2025-08-12)\n- John Doe"
+	expectedMessage := "📅 วันนี้ใครลา : (2025-08-12)\n- John Doe"
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -208,7 +208,7 @@ func TestEventNotifyService_Notify_LeaveEvents_MultipleEvents(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้ใครลา : (2025-08-12)\n- John Doe\n- Jane Smith\n- Bob Johnson"
+	expectedMessage := "📅 วันนี้ใครลา : (2025-08-12)\n- John Doe\n- Jane Smith\n- Bob Johnson"
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -328,7 +328,7 @@ func TestEventNotifyService_Notify_HolidayTakesPrecedenceOverLeave(t *testing.T)
 	}
 
 	// Should send holiday message, not leave message
-	expectedMessage := "วันนี้วันหยุด : (2025-08-12)\n- National Day"
+	expectedMessage := "วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- National Day"
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected holiday message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -358,7 +358,7 @@ func TestEventNotifyService_Notify_EmptyHolidayStringInSlice(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้วันหยุด : (2025-08-12)\n- "
+	expectedMessage := "วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- "
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -388,7 +388,7 @@ func TestEventNotifyService_Notify_EmptyLeaveStringInSlice(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้ใครลา : (2025-08-12)\n- "
+	expectedMessage := "📅 วันนี้ใครลา : (2025-08-12)\n- "
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}

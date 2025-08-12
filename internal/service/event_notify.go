@@ -28,7 +28,7 @@ func (e EventNotifyService) Notify(asOf time.Time) error {
 	}
 	if len(holidayEvents) > 0 {
 		log.Println("Today " + asOf.Format(time.DateOnly) + " is a holiday.")
-		message := fmt.Sprintf("วันนี้วันหยุด : (%s)\n", asOf.Format(time.DateOnly))
+		message := fmt.Sprintf("วันนี้วันหยุด 🎉🏖️: (%s)\n", asOf.Format(time.DateOnly))
 		for i, event := range holidayEvents {
 			if i == len(holidayEvents)-1 {
 				message += fmt.Sprintf("%v", "- "+event)
@@ -47,7 +47,7 @@ func (e EventNotifyService) Notify(asOf time.Time) error {
 			return fmt.Errorf("Error while getting events: %v", err)
 		}
 		if len(leaveEvents) > 0 {
-			message := fmt.Sprintf("วันนี้ใครลา : (%s)\n", asOf.Format(time.DateOnly))
+			message := fmt.Sprintf("📅 วันนี้ใครลา : (%s)\n", asOf.Format(time.DateOnly))
 			log.Printf("There are " + fmt.Sprint(len(leaveEvents)) + " on leave today.")
 			for i, event := range leaveEvents {
 				if i == len(leaveEvents)-1 {
