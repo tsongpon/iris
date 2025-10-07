@@ -59,3 +59,40 @@ func (g GoogleCalendar) GetEvents(asOf time.Time) ([]string, error) {
 
 	return eventSummaries, nil
 }
+
+func (g GoogleCalendar) GetEventsBetween(start, end time.Time) ([]string, error) {
+	ctx := context.Background()
+	credential, err := base64.StdEncoding.DecodeString(g.base64GoogleCalendarCredential)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode base64 credential: %v", err)
+	}
+
+	config, err := google.JWTConfigFromJSON(credential, calendar.CalendarReadonlyScope)
+	if err != nil {
+		log.Fatalf("Unable to parse client secret file to config: %v", err)
+	}
+
+	client := config.Client(ctx)
+	srv, err := calendar.NewService(ctx, option.WithHTTPClient(client))
+	if err != nil {
+		log.Fatalf("Unable to retrieve Calendar client: %v", err)
+	}
+
+	beginningOfPeriod := start.Format(time.RFC3339)
+	endOfPeriod := end.Format(time.RFC3339)
+	log.Printf("Get event between : %s and %s, from calendar : %s", beginningOfPeriod, endOfPeriod, g.calendarID)
+
+	events, err := srv.Events.List(g.calendarID).ShowDeleted(false).
+		SingleEvents(true).TimeMin(beginningOfPeriod).TimeMax(endOfPeriod).MaxResults(50).OrderBy("startTime").Do()
+	if err != nil {
+		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
+	}
+
+	var eventSummaries []string
+	for _, item := range events.Items {
+		date := item.Start.Date
+		eventSummaries = append(eventSummaries, date+": "+item.Summary)
+	}
+
+	return eventSummaries, nil
+}
