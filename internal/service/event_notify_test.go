@@ -66,7 +66,7 @@ func TestEventNotifyService_Notify_HolidayEvents_SingleEvent(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- National Day"
+	expectedMessage := "วันนี้วันหยุด 🥳🏖️: (2025-08-12)\n- National Day"
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -96,7 +96,7 @@ func TestEventNotifyService_Notify_HolidayEvents_MultipleEvents(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- National Day\n- Independence Day"
+	expectedMessage := "วันนี้วันหยุด 🥳🏖️: (2025-08-12)\n- National Day\n- Independence Day"
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -336,7 +336,7 @@ func TestEventNotifyService_Notify_HolidayTakesPrecedenceOverLeave(t *testing.T)
 	}
 
 	// Should send holiday message, not leave message
-	expectedMessage := "วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- National Day"
+	expectedMessage := "วันนี้วันหยุด 🥳🏖️: (2025-08-12)\n- National Day"
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected holiday message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -366,7 +366,7 @@ func TestEventNotifyService_Notify_EmptyHolidayStringInSlice(t *testing.T) {
 		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
 	}
 
-	expectedMessage := "วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- "
+	expectedMessage := "วันนี้วันหยุด 🥳🏖️: (2025-08-12)\n- "
 	if mockNotification.sentMessage != expectedMessage {
 		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
@@ -539,5 +539,237 @@ func TestIsEndOfMonth_AllMonths(t *testing.T) {
 		if resultBefore {
 			t.Errorf("Expected false for %s %d (day before last), got true", tc.month, tc.lastDay-1)
 		}
+	}
+}
+
+// Tests for end-of-month notification functionality
+func TestEventNotifyService_Notify_EndOfMonth_WithHolidays(t *testing.T) {
+	// Arrange
+	mockNotification := &MockNotificationRepository{}
+	mockHolidayRepo := &MockEventRepository{
+		events:        []string{},
+		eventsBetween: []string{"New Year's Day", "Independence Day"},
+	}
+	mockLeaveRepo := &MockEventRepository{events: []string{}}
+
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+
+	// Create end of month date: January 31, 2025, 8 AM Bangkok time
+	bangkok, _ := time.LoadLocation("Asia/Bangkok")
+	testDate := time.Date(2025, 1, 31, 8, 0, 0, 0, bangkok)
+
+	// Act
+	err := service.Notify(testDate)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if mockNotification.numberOfCalls != 1 {
+		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
+	}
+
+	expectedMessage := "มีวันหยุด 2 วันเดือน กุมภาพันธ์ 🎉🏖️:\n- New Year's Day\n- Independence Day"
+	if mockNotification.sentMessage != expectedMessage {
+		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
+	}
+}
+
+func TestEventNotifyService_Notify_EndOfMonth_NoHolidays(t *testing.T) {
+	// Arrange
+	mockNotification := &MockNotificationRepository{}
+	mockHolidayRepo := &MockEventRepository{
+		events:        []string{},
+		eventsBetween: []string{}, // No holidays next month
+	}
+	mockLeaveRepo := &MockEventRepository{events: []string{}}
+
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+
+	// Create end of month date: March 31, 2025, 8 AM Bangkok time
+	bangkok, _ := time.LoadLocation("Asia/Bangkok")
+	testDate := time.Date(2025, 3, 31, 8, 0, 0, 0, bangkok)
+
+	// Act
+	err := service.Notify(testDate)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if mockNotification.numberOfCalls != 1 {
+		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
+	}
+
+	expectedMessage := "เดือน เมษายน ไม่มีวันหยุด 💪😢"
+	if mockNotification.sentMessage != expectedMessage {
+		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
+	}
+}
+
+func TestEventNotifyService_Notify_EndOfMonth_GetEventsBetweenError(t *testing.T) {
+	// Arrange
+	mockNotification := &MockNotificationRepository{}
+	mockHolidayRepo := &MockEventRepository{
+		events: []string{},
+		err:    errors.New("repository error"),
+	}
+	mockLeaveRepo := &MockEventRepository{events: []string{}}
+
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+
+	// Create end of month date: December 31, 2025, 8 AM Bangkok time
+	bangkok, _ := time.LoadLocation("Asia/Bangkok")
+	testDate := time.Date(2025, 12, 31, 8, 0, 0, 0, bangkok)
+
+	// Act
+	err := service.Notify(testDate)
+
+	// Assert
+	if err == nil {
+		t.Error("Expected error, got nil")
+	}
+
+	expectedError := "Error while getting holiday events: repository error"
+	if err.Error() != expectedError {
+		t.Errorf("Expected error '%s', got '%s'", expectedError, err.Error())
+	}
+
+	if mockNotification.numberOfCalls != 0 {
+		t.Errorf("Expected notification not to be called, got %d calls", mockNotification.numberOfCalls)
+	}
+}
+
+func TestEventNotifyService_Notify_EndOfMonth_SendNotificationErrorWithHolidays(t *testing.T) {
+	// Arrange
+	mockNotification := &MockNotificationRepository{err: errors.New("notification error")}
+	mockHolidayRepo := &MockEventRepository{
+		events:        []string{},
+		eventsBetween: []string{"Holiday 1"},
+	}
+	mockLeaveRepo := &MockEventRepository{events: []string{}}
+
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+
+	// Create end of month date: February 28, 2025, 8 AM Bangkok time
+	bangkok, _ := time.LoadLocation("Asia/Bangkok")
+	testDate := time.Date(2025, 2, 28, 8, 0, 0, 0, bangkok)
+
+	// Act
+	err := service.Notify(testDate)
+
+	// Assert
+	if err == nil {
+		t.Error("Expected error, got nil")
+	}
+
+	expectedError := "Error while sending notification: notification error"
+	if err.Error() != expectedError {
+		t.Errorf("Expected error '%s', got '%s'", expectedError, err.Error())
+	}
+
+	if mockNotification.numberOfCalls != 1 {
+		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
+	}
+}
+
+func TestEventNotifyService_Notify_EndOfMonth_SendNotificationErrorNoHolidays(t *testing.T) {
+	// Arrange
+	mockNotification := &MockNotificationRepository{err: errors.New("notification error")}
+	mockHolidayRepo := &MockEventRepository{
+		events:        []string{},
+		eventsBetween: []string{}, // No holidays
+	}
+	mockLeaveRepo := &MockEventRepository{events: []string{}}
+
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+
+	// Create end of month date: April 30, 2025, 8 AM Bangkok time
+	bangkok, _ := time.LoadLocation("Asia/Bangkok")
+	testDate := time.Date(2025, 4, 30, 8, 0, 0, 0, bangkok)
+
+	// Act
+	err := service.Notify(testDate)
+
+	// Assert
+	if err == nil {
+		t.Error("Expected error, got nil")
+	}
+
+	expectedError := "Error while sending notification: notification error"
+	if err.Error() != expectedError {
+		t.Errorf("Expected error '%s', got '%s'", expectedError, err.Error())
+	}
+
+	if mockNotification.numberOfCalls != 1 {
+		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
+	}
+}
+
+func TestEventNotifyService_Notify_EndOfMonth_FebruaryLeapYear(t *testing.T) {
+	// Arrange
+	mockNotification := &MockNotificationRepository{}
+	mockHolidayRepo := &MockEventRepository{
+		events:        []string{},
+		eventsBetween: []string{"Spring Festival"},
+	}
+	mockLeaveRepo := &MockEventRepository{events: []string{}}
+
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+
+	// Create end of month date: February 29, 2024 (leap year), 8 AM Bangkok time
+	bangkok, _ := time.LoadLocation("Asia/Bangkok")
+	testDate := time.Date(2024, 2, 29, 8, 0, 0, 0, bangkok)
+
+	// Act
+	err := service.Notify(testDate)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if mockNotification.numberOfCalls != 1 {
+		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
+	}
+
+	expectedMessage := "มีวันหยุด 1 วันเดือน มีนาคม 🎉🏖️:\n- Spring Festival"
+	if mockNotification.sentMessage != expectedMessage {
+		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
+	}
+}
+
+func TestEventNotifyService_Notify_EndOfMonth_SingleHoliday(t *testing.T) {
+	// Arrange
+	mockNotification := &MockNotificationRepository{}
+	mockHolidayRepo := &MockEventRepository{
+		events:        []string{},
+		eventsBetween: []string{"Labor Day"},
+	}
+	mockLeaveRepo := &MockEventRepository{events: []string{}}
+
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+
+	// Create end of month date: May 31, 2025, 8 AM Bangkok time
+	bangkok, _ := time.LoadLocation("Asia/Bangkok")
+	testDate := time.Date(2025, 5, 31, 8, 0, 0, 0, bangkok)
+
+	// Act
+	err := service.Notify(testDate)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	if mockNotification.numberOfCalls != 1 {
+		t.Errorf("Expected notification to be called once, got %d", mockNotification.numberOfCalls)
+	}
+
+	expectedMessage := "มีวันหยุด 1 วันเดือน มิถุนายน 🎉🏖️:\n- Labor Day"
+	if mockNotification.sentMessage != expectedMessage {
+		t.Errorf("Expected message '%s', got '%s'", expectedMessage, mockNotification.sentMessage)
 	}
 }

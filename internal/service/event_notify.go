@@ -45,6 +45,14 @@ func (e EventNotifyService) Notify(asOf time.Time) error {
 				log.Printf("Error while sending notification: %v", err)
 				return fmt.Errorf("Error while sending notification: %v", err)
 			}
+		} else {
+			log.Println("There are no holidays next month")
+			message := fmt.Sprintf("เดือน %s ไม่มีวันหยุด 💪😢", monthEnToTh(lastDayOfMonth.Format("January")))
+			err = e.notificationRepository.SendNotification(message)
+			if err != nil {
+				log.Printf("Error while sending notification: %v", err)
+				return fmt.Errorf("Error while sending notification: %v", err)
+			}
 		}
 	}
 
@@ -55,7 +63,7 @@ func (e EventNotifyService) Notify(asOf time.Time) error {
 	}
 	if len(holidayEvents) > 0 {
 		log.Println("Today " + asOf.Format(time.DateOnly) + " is a holiday.")
-		message := fmt.Sprintf("วันนี้วันหยุด 🎉🏖️: (%s)\n", asOf.Format(time.DateOnly))
+		message := fmt.Sprintf("วันนี้วันหยุด 🥳🏖️: (%s)\n", asOf.Format(time.DateOnly))
 		for i, event := range holidayEvents {
 			if i == len(holidayEvents)-1 {
 				message += fmt.Sprintf("%v", "- "+event)
