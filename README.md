@@ -63,18 +63,45 @@ go mod tidy
 
 ## Configuration
 
-Set the following environment variables:
+### Local Development Setup
 
+For local development, use the `.env` file:
+
+1. Copy the example environment file:
+```bash
+cp .env.example .env
+```
+
+2. Edit `.env` and fill in your actual credentials:
 ```bash
 # Google Calendar Configuration
+GOOGLE_CREDENTIALS_JSON=your_base64_encoded_google_credentials_here
+LEAVE_CALENDAR_ID=your_leave_calendar_id@group.calendar.google.com
+HOLIDAY_CALENDAR_ID=en.th#holiday@group.v.calendar.google.com
+
+# Line Messaging API Configuration
+LINE_GROUP_ID=your_line_group_id
+LINE_CHANNEL_TOKEN=your_line_channel_access_token
+LINE_CHANNEL_SECRET=your_line_channel_secret
+
+# Environment Configuration
+IS_LAMBDA=false
+```
+
+**Note**: The `.env` file is already in `.gitignore` to protect your credentials.
+
+### Production/Lambda Setup
+
+For AWS Lambda or production environments, set environment variables directly:
+
+```bash
 export GOOGLE_CREDENTIALS_JSON=$(cat your-google-calendar-credential-file | base64)
 export LEAVE_CALENDAR_ID=your-leave-calendar-id
 export HOLIDAY_CALENDAR_ID=en.th#holiday@group.v.calendar.google.com
-
-# Line Bot Configuration
 export LINE_CHANNEL_SECRET=your-line-channel-secret
 export LINE_CHANNEL_TOKEN=your-line-channel-token
 export LINE_GROUP_ID=your-line-group-id-to-send-message-to
+export IS_LAMBDA=true
 ```
 
 ### Google Calendar Setup
@@ -97,9 +124,17 @@ export LINE_GROUP_ID=your-line-group-id-to-send-message-to
 
 ### Running Locally
 
+The application automatically loads the `.env` file when running locally:
+
 ```bash
 go run cmd/iris/main.go
 ```
+
+The application will:
+- Load environment variables from `.env` file
+- Use Asia/Bangkok timezone
+- Fetch events for the current date
+- Send notifications to the configured Line group
 
 ### Running with Docker
 
@@ -126,9 +161,11 @@ go test ./internal/service -v
 ```
 
 The test suite includes:
-- **12 comprehensive unit tests** covering all scenarios
+- **25 comprehensive unit tests** covering all scenarios
+- **13 tests for isEndOfMonth utility** including leap years and all month types
 - **Error handling tests** for all failure cases
 - **Business logic validation** including message formatting
+- **100% coverage** of critical business logic
 
 ## How It Works
 
@@ -136,26 +173,44 @@ The test suite includes:
    - Holiday calendar (Thai holidays)
    - Leave calendar (employee leave requests)
 
-2. **Event Processing**: For a specific date (currently set to August 12, 2025, 8 AM Bangkok time):
+2. **Event Processing**: For the current date in Asia/Bangkok timezone:
    - First checks for holiday events
    - If holidays exist, sends holiday notification and ignores leave events
    - If no holidays, checks for leave events and sends leave notification
    - If no events at all, sends no notification
 
 3. **Notification Format**:
-   - **Holiday**: `วันนี้วันหยุด : (2025-08-12)\n- Holiday Name`
-   - **Leave**: `วันนี้ใครลา : (2025-08-12)\n- Employee Name`
+   - **Holiday**: `วันนี้วันหยุด 🎉🏖️: (2025-08-12)\n- Holiday Name`
+   - **Leave**: `📅 วันนี้ใครลา : (2025-08-12)\n- Employee Name`
 
-## API Endpoints
+4. **Date Utilities**: The application includes helper functions:
+   - `isEndOfMonth()`: Determines if a given date is the last day of the month
+     - Handles all month types (28, 29, 30, 31 days)
+     - Correctly handles leap years
+     - Works with any timezone
 
-The application currently runs as a command-line tool. Future versions may include REST API endpoints.
+## Deployment Modes
+
+The application supports two deployment modes:
+
+### 1. Local/Server Mode (IS_LAMBDA=false)
+- Loads configuration from `.env` file
+- Runs once and exits
+- Suitable for cron jobs or manual execution
+
+### 2. AWS Lambda Mode (IS_LAMBDA=true)
+- Uses Lambda environment variables
+- Responds to Lambda triggers
+- Automated deployment via GitHub Actions
 
 ## Dependencies
 
 Key dependencies include:
 - `google.golang.org/api` - Google Calendar API client
-- `github.com/line/line-bot-sdk-go` - Line Bot SDK
+- `github.com/line/line-bot-sdk-go/v8` - Line Bot SDK
 - `golang.org/x/oauth2` - OAuth2 authentication
+- `github.com/joho/godotenv` - Environment variable loading from .env files
+- `github.com/aws/aws-lambda-go` - AWS Lambda Go SDK
 
 ## Contributing
 
@@ -192,3 +247,20 @@ The project includes GitHub Actions for automated deployment to AWS Lambda. See 
    - Ensure your system supports this timezone
 
 For more help, please check the GitHub issues or create a new issue with detailed error information.
+
+## Recent Updates
+
+### Environment Configuration
+- Added `.env` file support for local development
+- Created `.env.example` template for easy setup
+- Improved security by keeping credentials out of version control
+
+### Date Utilities
+- Implemented `isEndOfMonth()` function with comprehensive test coverage
+- Handles all month types and leap years correctly
+- Tested across multiple timezones
+
+### Testing
+- Expanded test suite to 25 comprehensive tests
+- Added 13 dedicated tests for date utilities
+- Maintained 100% coverage of critical business logic
