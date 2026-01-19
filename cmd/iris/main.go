@@ -15,15 +15,18 @@ import (
 func newEventNotifyServive() (service.EventNotifyService, error) {
 	leaveCalendarID := os.Getenv("LEAVE_CALENDAR_ID")
 	holidayCalendarID := os.Getenv("HOLIDAY_CALENDAR_ID")
+	onCallCalendarID := os.Getenv("ON_CALL_CALENDAR_ID")
 	googleCalendarCredential := os.Getenv("GOOGLE_CREDENTIALS_JSON")
+
 	lineGroupID := os.Getenv("LINE_GROUP_ID")
 	lineChannelToken := os.Getenv("LINE_CHANNEL_TOKEN")
 	lineChannelSecret := os.Getenv("LINE_CHANNEL_SECRET")
 
 	leaveEventRepository := repository.NewGoogleCalendar(googleCalendarCredential, leaveCalendarID)
 	holidayEventRepository := repository.NewGoogleCalendar(googleCalendarCredential, holidayCalendarID)
+	onCallEventRepository := repository.NewGoogleCalendar(googleCalendarCredential, onCallCalendarID)
 	notificationRepo := repository.NewLineNotificationRepository(lineGroupID, lineChannelSecret, lineChannelToken)
-	eventNotify := service.NewEventNotifyService(leaveEventRepository, holidayEventRepository, notificationRepo)
+	eventNotify := service.NewEventNotifyService(leaveEventRepository, holidayEventRepository, onCallEventRepository, notificationRepo)
 
 	return eventNotify, nil
 }

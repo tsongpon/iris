@@ -47,8 +47,9 @@ func TestEventNotifyService_Notify_HolidayEvents_SingleEvent(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{"National Day"}}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -77,8 +78,9 @@ func TestEventNotifyService_Notify_HolidayEvents_MultipleEvents(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{"National Day", "Independence Day"}}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -107,8 +109,9 @@ func TestEventNotifyService_Notify_HolidayEvents_GetEventsError(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{err: errors.New("holiday repository error")}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -137,8 +140,9 @@ func TestEventNotifyService_Notify_HolidayEvents_SendNotificationError(t *testin
 	mockNotification := &MockNotificationRepository{err: errors.New("notification error")}
 	mockHolidayRepo := &MockEventRepository{events: []string{"National Day"}}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -167,8 +171,9 @@ func TestEventNotifyService_Notify_LeaveEvents_SingleEvent(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{}} // No holidays
 	mockLeaveRepo := &MockEventRepository{events: []string{"John Doe"}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -197,8 +202,9 @@ func TestEventNotifyService_Notify_LeaveEvents_MultipleEvents(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{}} // No holidays
 	mockLeaveRepo := &MockEventRepository{events: []string{"John Doe", "Jane Smith", "Bob Johnson"}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -227,8 +233,9 @@ func TestEventNotifyService_Notify_LeaveEvents_GetEventsError(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{}} // No holidays
 	mockLeaveRepo := &MockEventRepository{err: errors.New("leave repository error")}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -257,8 +264,9 @@ func TestEventNotifyService_Notify_LeaveEvents_SendNotificationError(t *testing.
 	mockNotification := &MockNotificationRepository{err: errors.New("notification error")}
 	mockHolidayRepo := &MockEventRepository{events: []string{}} // No holidays
 	mockLeaveRepo := &MockEventRepository{events: []string{"John Doe"}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -287,8 +295,9 @@ func TestEventNotifyService_Notify_NoEventsAtAll(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{}} // No holidays
 	mockLeaveRepo := &MockEventRepository{events: []string{}}   // No leaves
+	mockOnCallRepo := &MockEventRepository{events: []string{}}  // No on-call
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -316,8 +325,9 @@ func TestEventNotifyService_Notify_HolidayTakesPrecedenceOverLeave(t *testing.T)
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{"National Day"}}
 	mockLeaveRepo := &MockEventRepository{events: []string{"John Doe"}} // This should be ignored
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -347,8 +357,9 @@ func TestEventNotifyService_Notify_EmptyHolidayStringInSlice(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{""}} // Empty string but slice is not empty
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -377,8 +388,9 @@ func TestEventNotifyService_Notify_EmptyLeaveStringInSlice(t *testing.T) {
 	mockNotification := &MockNotificationRepository{}
 	mockHolidayRepo := &MockEventRepository{events: []string{}} // No holidays
 	mockLeaveRepo := &MockEventRepository{events: []string{""}} // Empty string but slice is not empty
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create the specific date: 12 August 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -551,8 +563,9 @@ func TestEventNotifyService_Notify_EndOfMonth_WithHolidays(t *testing.T) {
 		eventsBetween: []string{"New Year's Day", "Independence Day"},
 	}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create end of month date: January 31, 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -584,8 +597,9 @@ func TestEventNotifyService_Notify_EndOfMonth_NoHolidays(t *testing.T) {
 		eventsBetween: []string{}, // No holidays next month
 	}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create end of month date: March 31, 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -617,8 +631,9 @@ func TestEventNotifyService_Notify_EndOfMonth_GetEventsBetweenError(t *testing.T
 		err:    errors.New("repository error"),
 	}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create end of month date: December 31, 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -650,8 +665,9 @@ func TestEventNotifyService_Notify_EndOfMonth_SendNotificationErrorWithHolidays(
 		eventsBetween: []string{"Holiday 1"},
 	}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create end of month date: February 28, 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -683,8 +699,9 @@ func TestEventNotifyService_Notify_EndOfMonth_SendNotificationErrorNoHolidays(t 
 		eventsBetween: []string{}, // No holidays
 	}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create end of month date: April 30, 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -716,8 +733,9 @@ func TestEventNotifyService_Notify_EndOfMonth_FebruaryLeapYear(t *testing.T) {
 		eventsBetween: []string{"Spring Festival"},
 	}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create end of month date: February 29, 2024 (leap year), 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
@@ -749,8 +767,9 @@ func TestEventNotifyService_Notify_EndOfMonth_SingleHoliday(t *testing.T) {
 		eventsBetween: []string{"Labor Day"},
 	}
 	mockLeaveRepo := &MockEventRepository{events: []string{}}
+	mockOnCallRepo := &MockEventRepository{events: []string{}}
 
-	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockNotification)
+	service := NewEventNotifyService(mockLeaveRepo, mockHolidayRepo, mockOnCallRepo, mockNotification)
 
 	// Create end of month date: May 31, 2025, 8 AM Bangkok time
 	bangkok, _ := time.LoadLocation("Asia/Bangkok")
