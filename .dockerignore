@@ -1,0 +1,13 @@
+# Never bake secrets or VCS history into the image
+.env
+*.sa.json
+sa.json
+
+.git
+.gitignore
+.github
+.dockerignore
+Dockerfile
+
+*.md
+scripts/

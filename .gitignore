@@ -1,0 +1,17 @@
+# Environment files — may contain credentials, never commit
+.env
+
+# Service account key files
+sa.json
+*.sa.json
+
+# Compiled binaries and test artifacts
+/iris
+/server
+*.exe
+*.test
+*.out
+
+# Coverage profiles
+*.prof
+coverage.*
