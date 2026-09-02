@@ -47,10 +47,10 @@ func (r *MSTeamNotificationRepository) SendNotification(ctx context.Context, mes
 		},
 	}
 
-	// Marshal to JSON
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
-		panic(err)
+		slog.ErrorContext(ctx, "marshal notification payload failed", "error", err)
+		return fmt.Errorf("marshal notification payload: %w", err)
 	}
 
 	// Make the POST request
@@ -74,9 +74,9 @@ func (r *MSTeamNotificationRepository) SendNotification(ctx context.Context, mes
 		return err
 	}
 
-	if resp.StatusCode != http.StatusAccepted {
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		slog.ErrorContext(ctx, "failed to send notification", "status", resp.StatusCode, "body", string(body))
-		return fmt.Errorf("failed to send notification: %s", string(body))
+		return fmt.Errorf("failed to send notification: status %d: %s", resp.StatusCode, string(body))
 	}
 
 	return nil
